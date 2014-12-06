@@ -1,1 +1,1 @@
-A module that enables simple RESTful API modules.
+A module that enables simple RESTful API modules
