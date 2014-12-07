@@ -29,7 +29,7 @@
 				$settings->save(post('MjmRestful_SettingsManager'));
 
 				Phpr::$session->flash['success'] = 'Restful settings have been successfully saved.';
-				Phpr::$response->redirect(url('system/settings'));
+				Phpr::$response->redirect(url('mjmrestful/settings/config/'));
 			}
 			catch (Exception $ex)
 			{

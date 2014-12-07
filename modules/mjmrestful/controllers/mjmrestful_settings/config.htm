@@ -13,7 +13,7 @@
 			
 			<input type="hidden" id="prev_file_based_field_state" value="<?= $settings->enable_filebased_templates ? 1 : 0 ?>" name="prev_file_based_field_state"/>
 
-			<?= backend_ajax_button('Save', 'config_onSave', array(), "preCheckFunction: onSaveSettings") ?>
+			<?= backend_ajax_button('Save', 'config_onSave', array()) ?>
 			<?= backend_button('Cancel', url('system/settings')) ?>
 			
 			<div class="clear"></div>
