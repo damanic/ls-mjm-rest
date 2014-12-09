@@ -58,4 +58,38 @@ class MjmRestful_ApiAccess extends Db_ActiveRecord
     }
 
 
+    function changeNickname($oldNickname, $newNickname, $users) {
+
+
+        // Write your code here
+        if(!in_array($oldNickname,$users)){
+            print("Failed to Update");
+            return false;
+        }
+
+        if(in_array($newNickname,$users)){
+            print("Failed to Update");
+            return false;
+        }
+
+        if(is_numeric(substr($newNickname,0,1))){
+            print("Failed to Update");
+            return false;
+        }
+
+        if(!preg_match("/[A-Za-z0-9\(\$\<\>\-\_\)]+/", $newNickname) ){
+            print("Failed to Update");
+            return false;
+        }
+
+        print("Your nickname has been changed from $oldNickname to $newNickname");
+
+
+
+    }
+
+// Do NOT call the changeNickname function in the code
+// you write. The system will call it automatically.
+
+
 }

@@ -152,10 +152,8 @@ protected $fields_allow_write;
         $input_stream = MjmRestful_Helper::get_input_stream();
         $data = new stdClass();
             foreach($allowed_fields as $field){
-            $value = MjmRestful_Helper::get_post_json($field,$input_stream);
-                if(!empty($value)){
+                $value = MjmRestful_Helper::get_post_json($field,$input_stream);
                 $data->$field = $value;
-                }
             }
 
             //passwords must be set to null otherwise password reset
@@ -214,9 +212,9 @@ protected $fields_allow_write;
         $return_fields = $this->get_customer_fields_read();
         foreach($return_fields  as $field){
             if(is_object($customer->$field)){
-            $data->$field = $customer->$field->name;
+            $data->$field = empty($customer->$field->name) ? null : $customer->$field->name;
             } else {
-            $data->$field = $customer->$field;
+            $data->$field = empty($customer->$field) ? null : $customer->$field;
             }
         }
     return  $data;
