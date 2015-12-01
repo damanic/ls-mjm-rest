@@ -66,9 +66,10 @@ class MjmRestful_Response {
     }
 
     public function deliver_headers(){
+        $api_settings = MjmRestful_SettingsManager::get();
         header("HTTP/1.0 {$this->status_code} {$this->message}");
         $this->add_headers('Access-Control-Allow-Origin', "*"); //MjmRestful_Helper::get_header('Origin')
-        $this->add_headers('Access-Control-Allow-Headers', 'Content-Type, X-Lemonstand-Api-Token, '.MjmRestful_Helper::get_header('Access-Control-Request-Headers'));
+        $this->add_headers('Access-Control-Allow-Headers', 'Content-Type, '.$api_settings->token_header_name.', '.MjmRestful_Helper::get_header('Access-Control-Request-Headers'));
 
         $this->add_headers('Access-Control-Max-Age', '1728000');
 

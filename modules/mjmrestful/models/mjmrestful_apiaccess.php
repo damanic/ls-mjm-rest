@@ -22,22 +22,36 @@ class MjmRestful_ApiAccess extends Db_ActiveRecord
     }
 
     public function before_create($deferred_session_key = null){
+        $api_settings = MjmRestful_SettingsManager::get();
+        $expire_days = is_numeric($api_settings->token_expire) ? $api_settings->token_expire : 365;
         $todays_date = new Phpr_DateTime();
-        $this->token_expire_date = $todays_date->addDays(365);
+        $this->token_expire_date = $todays_date->addDays($expire_days);
     }
 
-    public static function is_valid_key(Shop_Customer $customer, $token, $device_id){
-            $obj = MjmRestful_ApiAccess::create()->where('customer_id = :customer_id AND token = :token AND device_id = :device_id AND token_expire_date > NOW()',
-                                                    array('customer_id'=>$customer->id, 'token'=>$token,'device_id'=>$device_id))->find_all();
+    public static function is_valid_key(Shop_Customer $customer, $token, $device_id=false){
+        $where = "customer_id = :customer_id AND token = :token AND token_expire_date > NOW()";
+
+        if($device_id){
+            $where .= ' AND device_id = :device_id';
+        }
+
+        $obj = MjmRestful_ApiAccess::create()->where($where, array('customer_id'=>$customer->id,'token'=>$token,'device_id'=>$device_id))->find_all();
+
         if($obj->id){
             return true;
         }
+
     return false;
     }
 
-    public static function remove_device_keys(Shop_Customer $customer, $device_id){
-        $obj = MjmRestful_ApiAccess::create()->where('customer_id = :customer_id AND device_id = :device_id',
-            array('customer_id'=>$customer->id, 'device_id'=>$device_id))->find_all();
+    public static function remove_device_keys(Shop_Customer $customer, $device_id=false){
+        $where = 'customer_id = :customer_id';
+
+        if($device_id){
+            $where .= ' AND device_id = :device_id';
+        }
+
+        $obj = MjmRestful_ApiAccess::create()->where($where, array('customer_id'=>$customer->id, 'device_id'=>$device_id))->find_all();
         if($obj){
             foreach($obj as $old_key){
             $old_key->delete();
@@ -47,8 +61,13 @@ class MjmRestful_ApiAccess extends Db_ActiveRecord
         return true;
     }
 
-    public static function get_user_by_token($token, $device_id){
-        $obj = MjmRestful_ApiAccess::create()->where('token = :token AND device_id = :device_id AND token_expire_date > NOW()',
+    public static function get_user_by_token($token, $device_id=false){
+
+        $where = 'token = :token AND token_expire_date > NOW()';
+        if($device_id){
+            $where .= ' AND device_id = :device_id ';
+        }
+        $obj = MjmRestful_ApiAccess::create()->where($where,
             array('token'=>$token,'device_id'=>$device_id))->find_all();
 
         if($obj){
@@ -56,40 +75,5 @@ class MjmRestful_ApiAccess extends Db_ActiveRecord
         }
     return false;
     }
-
-
-    function changeNickname($oldNickname, $newNickname, $users) {
-
-
-        // Write your code here
-        if(!in_array($oldNickname,$users)){
-            print("Failed to Update");
-            return false;
-        }
-
-        if(in_array($newNickname,$users)){
-            print("Failed to Update");
-            return false;
-        }
-
-        if(is_numeric(substr($newNickname,0,1))){
-            print("Failed to Update");
-            return false;
-        }
-
-        if(!preg_match("/[A-Za-z0-9\(\$\<\>\-\_\)]+/", $newNickname) ){
-            print("Failed to Update");
-            return false;
-        }
-
-        print("Your nickname has been changed from $oldNickname to $newNickname");
-
-
-
-    }
-
-// Do NOT call the changeNickname function in the code
-// you write. The system will call it automatically.
-
 
 }

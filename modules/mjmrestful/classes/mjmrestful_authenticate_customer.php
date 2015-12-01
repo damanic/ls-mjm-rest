@@ -1,21 +1,26 @@
 <?php
 
 class MjmRestful_Authenticate_Customer extends MjmRestful_Authenticate {
-protected $fields_allow_read;
-protected $fields_allow_write;
+    protected $fields_allow_read;
+    protected $fields_allow_write;
+    protected $api_settings;
 
     public function __construct(MjmRestful_Router $router){
 
         //PASS authentication to the router.
         $router->enable_authentication($this);
 
+        //inherit routers api settings
+        $this->api_settings = $router->get_api_settings();
+
         //Default Read Fields
         $this->allow_customer_fields_read(array('id', 'first_name','last_name','email','company','phone'));
+        $this->allow_customer_fields_write(array('first_name','last_name','email','company','phone'));
 
 
         //Set Reserved Authentication Routes.
         //GET
-        //Fetch Authenticated Customer Account (can provide LOGIN credentials)
+        //Fetch Authenticated Customer Account (can provide LOGIN parameters)
         $callback = array(&$this, 'get_customer');
         $route = $router->get('/session/customer/:id', $callback);
         //$this->reserve_route($route);
@@ -52,6 +57,13 @@ protected $fields_allow_write;
         //$this->reserve_route($route);
     }
 
+    public function get_api_settings(){
+        if(empty($this->api_settings)){
+            $this->api_settings = MjmRestful_SettingsManager::get();
+        }
+        return $this->api_settings;
+    }
+
     public function allow_customer_fields_write(Array $fields){
     $this->fields_allow_write = $fields;
     }
@@ -81,11 +93,16 @@ protected $fields_allow_write;
     }
 
     public function login_on_key(){
-        if(strlen(self::get_users_api_token()) > 32){
+        $users_api_token = self::get_users_api_token();
+        if(strlen($users_api_token) > 32){
+
+            $device_id = false;
+            if($this->get_api_settings()->token_device_lock){
+            $device_id = self::get_users_device_id();
+            }
 
             //check for valid key
-            $customer = MjmRestful_ApiAccess::get_user_by_token(self::get_users_api_token(),
-                self::get_users_device_id());
+            $customer = MjmRestful_ApiAccess::get_user_by_token($users_api_token, $device_id);
 
             if($customer){
                 //login customer
@@ -259,8 +276,12 @@ protected $fields_allow_write;
             $customer = Phpr::$frontend_security->authorize_user();
 
             if($customer){
+                $device_id = false;
+                if($this->get_api_settings()->token_device_lock){
+                    $device_id = self::get_users_device_id();
+                }
                 //remove api key
-                MjmRestful_ApiAccess::remove_device_keys($customer, self::get_users_device_id());
+                MjmRestful_ApiAccess::remove_device_keys($customer, $device_id);
             }
 
             //kill session
@@ -274,8 +295,9 @@ protected $fields_allow_write;
 
 
     public static function get_users_api_token(){
-        return MjmRestful_Helper::get_header('X-Lemonstand-Api-Token');
-
+        $settings = MjmRestful_SettingsManager::get();
+        $token_name = $settings->token_header_name;
+        return MjmRestful_Helper::get_header($token_name);
     }
 
     public static function get_users_device_id(){
@@ -283,11 +305,17 @@ protected $fields_allow_write;
     }
 
     protected function renew_token($customer){
+        $api_token = self::get_users_api_token();
+
+        $device_id = false;
+        if($this->get_api_settings()->token_device_lock){
+            $device_id = self::get_users_device_id();
+        }
 
         //check if token needs to be renewed
-        if(!MjmRestful_ApiAccess::is_valid_key($customer, self::get_users_api_token(),self::get_users_device_id())){
+        if(!MjmRestful_ApiAccess::is_valid_key($customer, $api_token,$device_id)){
             //we are issuing a new key for a device so delete any old keys for this device.
-            MjmRestful_ApiAccess::remove_device_keys($customer, self::get_users_device_id());
+            MjmRestful_ApiAccess::remove_device_keys($customer, $device_id);
             $data['customer'] = $customer;
             $data['token'] = $this->get_token();
             $data['device_id'] = self::get_users_device_id();

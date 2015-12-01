@@ -29,61 +29,52 @@ class MjmRestfulApiExample_Module extends Core_ModuleBase {
     //load the restful router
     $router = new MjmRestful_Router();
 
-    //add customer authentication layer to router
-    $auth = new MjmRestful_Authenticate_Customer($router);
+    /*
+     * MjmRestful_Authenticate_Customer
+     * adds a customer authentication layer to router
+     * LOGIN ROUTE GET: /session/customer/:id  , if not authenticated send parameters `email` `password`
+     * RESET PASSWORD GET|POST|PUT: /session/customer_reset_pw/
+     * REGISTER CUSTOMER POST: /session/customer/
+     * UPDATE CUSTOMER PUT: /session/customer/:id
+     * LOGOUT CUSTOMER DELETE: /session/customer/:id
+     */
+        $auth = new MjmRestful_Authenticate_Customer($router);
 
-    //load your api handler class, where you have placed all the functions for your Routes
-    $api = new MjmRestfulApiExample_V1();
+    /*
+     * MjmRestful_Location_API
+     * adds routes to retrieve country and states
+     * COUNTIES GET: /location/countries/:id
+     * STATES GET: /location/states/:country_id/
+     * STATE GET: /location/state/:id/
+     */
+        $location_api = new MjmRestful_Location_API($router);
 
+
+
+
+        //load your api handler class, this is where you keep your functions for your routes
+        $api = new MjmRestfulApiExample_V1();
 
         /*
          * Now you can set your routes.
-         * There is a reserved POST route: /authentication/login
-         * This route is set up by the router on construct
-         * and is always available for customer logins.
-         * To login post: username , post: password
-         * The route will return field:token on successful login.
-         * You can store the token in your APP for future authorisation.
-         * To use the token in a request, place it in the header: X-Lemonstand-Api-Token
-
-
-           HERE ARE SOME EXAMPLE ROUTES:
-        */
-
-        /**
-         * GET Customer Account Details
-         * Creates a route to retrieve the logged in customers account details.
-         * Method: GET
-         */
-        //The callback for this route. Fires RestfulApiExample_V1::get_Customer
-        $callback = array($api, 'get_Customer');
-        //authentication required
-        $options = array('requires_authentication'=>true);
-        //set the route URI. This becomes accessible via {yoursitedomain}/api_v1/session/customer
-        $router->get('/session/customer/', $callback, $options);
-
-
-
-        /**
+           BELOW ARE SOME EXAMPLE ROUTES:
+        /*
          * Dealing with a specific product review
-         * Just as an example, how to get, update and delete a review
+         * Just as an example: how to set up get, put, post and delete methods on the same route uri
          */
-        //SET THE ROUTE FOR ACCESSING A PRODUCT REVIEW RECORD
+        //SET THE ROUTE FOR MANAGING A PRODUCT REVIEW RECORD
         $route_for_product_review = '/product/review/:review_id';
-
-
-        /**
+        /*
          * GET Product Review Details
          * Creates an access point to retrieve the product review
          * Method: GET
          */
         //set which function should be called from the API
         $callback = array($api, 'get_ProductReview');
-        //attach the callback to a path.
-        //here :id is added as a required url parameter
+        //attach the callback to the get route.
         $router->get($route_for_product_review, $callback);
 
-        /**
+        /*
          * UPDATE Product Review Details
          * Creates an access point to update a review
          * Method: PUT
@@ -91,11 +82,11 @@ class MjmRestfulApiExample_Module extends Core_ModuleBase {
         //update review - requires customer login
         $options = array('requires_authentication'=>true);
         $callback = array($api, 'update_ProductReview');
-        //attach callback to a put path with authentication requirement
+        //attach the callback to the put route.
         $router->put($route_for_product_review, $callback);
 
 
-        /**
+        /*
          * CREATE Product Review Details
          * Creates an access point to create a new review
          * Method: POST
@@ -103,11 +94,11 @@ class MjmRestfulApiExample_Module extends Core_ModuleBase {
         //update review - requires customer login
         $options = array('requires_authentication'=>true);
         $callback = array($api, 'create_ProductReview');
-        //attach callback to a put path with authentication requirement
+        //attach callback to a post path with authentication requirement
         $router->post($route_for_product_review, $callback);
 
 
-        /**
+        /*
          * DELETE Product Review Details
          * Creates an access point to delete a review
          * Method: DELETE
@@ -117,8 +108,6 @@ class MjmRestfulApiExample_Module extends Core_ModuleBase {
         $callback = array($api, 'delete_ProductReview');
         //attach callback to a delete path with authentication requirement
         $router->delete($route_for_product_review,$callback);
-
-
 
 
 
@@ -141,7 +130,7 @@ class MjmRestfulApiExample_Module extends Core_ModuleBase {
         /*
          * END ROUTES
          * Hopefully you get the idea.
-         * FOR EACH ROUTE URL you can set a GET,POST,PUT,DELETE method.
+         * FOR EACH ROUTE URL you can set a GET,POST,PUT,DELETE,PATCH method.
          * Notice that all url parameters must be at the end of the route.
          * The routing on this module has some limitations, so keep it simple.
          * You cannot do
@@ -160,5 +149,7 @@ class MjmRestfulApiExample_Module extends Core_ModuleBase {
 
         //RUN API APP
         $router->run($url_params,$run_options );
+
+        //This module is now serving.
         }
 }

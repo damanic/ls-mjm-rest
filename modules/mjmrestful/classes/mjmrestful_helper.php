@@ -11,10 +11,13 @@
                 $input_stream = self::get_input_stream();
                 // WE can only call this once. For repeat use of get_post_json you must provide the input_stream.
             }
-        $data_json = json_decode($input_stream);
-        $value = post($key) ? post($key) : $data_json->$key;
-        $value  = $value ? $value : Phpr::$request->getField($key);
-        return $value;
+			$value = post( $key );
+			$data_json = json_decode($input_stream,true);
+			if(is_array($data_json)) {
+				$value = $value ? $value : $data_json[$key];
+			}
+			$value  = $value ? $value : Phpr::$request->getField($key);
+			return $value;
         }
 
         public function get_json_field($key, $input_stream = NULL){

@@ -4,44 +4,9 @@ protected $field_access;
 
     function __construct(){
 
-        /* This class contains simulated functions for testing.
-         *
-         * There is a reserved path for authentication login
-         * /authenticate/login
-         *
-         * Accepts
-         * post: username , post: password
-         *
-         * Returns: token
-         *
-         * The returned token can be stored in your application.
-         * and sent in a header
-         */
-
-        $this->field_access['Shop_Customer']['read'] = array('id','first_name','last_name','email','company','phone');
-        $this->field_access['Shop_Customer']['write'] = array('first_name','last_name','email','company','phone');
-
-    }
-    public function get_Customer($route){
-
-        $customer = Phpr::$frontend_security->authorize_user();
-            if(!$customer){
-                return MjmRestful_Response::create('unauthorised', null, 'Cannot Get Customer Data. Login Required'); //failed login
-            }
-
-        $data = new stdClass();
-            foreach($this->field_access['Shop_Customer']['read'] as $field){
-            $data->$field = $customer->$field;
-            }
-
-        return MjmRestful_Response::create('ok',$data, 'customer served');
     }
 
 
-
-
-
-    //get
     public function get_ProductReview($route) {
         //url parameters specified in the route can be fetched by name.
         //get :id

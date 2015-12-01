@@ -1,0 +1,1 @@
+ALTER TABLE `mjmrestful_settings` ADD COLUMN `disable_default_api` tinyint(4) DEFAULT NULL;

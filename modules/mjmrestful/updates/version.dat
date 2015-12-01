@@ -3,3 +3,6 @@
 #3|1.0.0 Market Release
 #4|1.0.1 Config Settings bug fix
 #5|1.0.2 minor fix to customer data input/output
+#6|1.1.0 Add default {yoursite}/mjmapi/ API access point and routes, that can be disabled through settings.
+#7|1.1.1 Fixed minor issues with config settings
+#8|1.2.0 Added IP/Password route authentication `MjmRestful_Authenticate_Ip`

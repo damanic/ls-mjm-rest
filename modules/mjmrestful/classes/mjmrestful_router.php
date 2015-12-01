@@ -16,6 +16,7 @@
         protected $routes;
         protected $reserved_routes;
         protected $auth;
+        protected $api_settings;
         public $get_cache_handler;
         public $set_cache_handler;
 
@@ -25,7 +26,19 @@
 				'cache_time' => 0,
 				'routes' => array('GET' => array(), 'POST' => array(), 'PUT' => array(), 'PATCH' => array(), 'DELETE' => array())
 			), $options);
+            $this->api_settings = MjmRestful_SettingsManager::get();
 		}
+
+        public function get_api_settings(){
+            return $this->api_settings;
+        }
+
+        function is_secure_request() {
+            if((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443){
+                return true;
+            }
+        return false;
+        }
 
         public function enable_authentication(MjmRestful_Authenticate $auth){
         $this->auth = $auth;
@@ -43,12 +56,19 @@
 	
 		public function run($request_url_params, $options = array()) {
 			$options = Core_Array::merge_recursive_distinct(array(
-				'format' => 'object',
+				'format' => 'json',
 				'types' => array('GET','POST','PUT','PATCH','DELETE'),
 
 			), $options);
 			
 			extract($options);
+
+            //check https
+            if($this->api_settings->force_https && !$this->is_secure_request()){
+                $response =  MjmRestful_Response::create('bad_request', null, 'You must use a secure HTTPS route to this API.', $format);
+                $this->respond($response);
+                return;
+            }
 
             //@TODO CACHING
 
@@ -86,7 +106,7 @@
             }
 
             if(empty($response->format)){
-            $response->format = $format; //@TODO clarify where and how format should be set
+            $response->format = $format; //@TODO clarify best way to set and overide format
             }
         $this->respond($response);
 		}
@@ -142,7 +162,7 @@
            // } else {
             //throw new Phpr_ApplicationException('Cannot add route. Path '.$path.' is reserved');
            // }
-		//return $route;
+		 return $route;
         }
 		
 		public function get($path, $callback, $options=NULL) {

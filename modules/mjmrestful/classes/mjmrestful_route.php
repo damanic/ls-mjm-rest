@@ -23,7 +23,7 @@ class MjmRestful_Route {
         $this->set_callback($callback);
 
         if($auth){
-        $this->auth = $auth;
+			$this->set_auth($auth);
         }
 
         $this->options = Core_Array::merge_recursive_distinct(array(
@@ -33,6 +33,10 @@ class MjmRestful_Route {
 
     }
 
+	public function set_requires_authentication($val=true){
+		$this->options['requires_authentication'] = $val;
+	}
+
     public function requires_authentication(){
         if($this->options['requires_authentication']){
             return true;
@@ -40,6 +44,9 @@ class MjmRestful_Route {
     return false;
     }
 
+	public function set_auth(MjmRestful_Authenticate $auth){
+		$this->auth = $auth;
+	}
     protected function set_type($type){
         $allowed_types = array('GET','POST','PUT','DELETE','PATCH');
         if(in_array($type,$allowed_types)){
@@ -116,7 +123,7 @@ class MjmRestful_Route {
             if($this->requires_authentication()){
 
                 if(!$this->auth || !$this->auth->is_user_authenticated()){
-                return MjmRestful_Response::create('unauthorised', null, 'You must login as a valid user to use this resource');
+                return MjmRestful_Response::create('unauthorised', null, 'You are not authorised to use this resource');
                 }
             }
 
