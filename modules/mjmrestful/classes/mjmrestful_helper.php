@@ -43,15 +43,22 @@
         public static function get_header($key){
             if(function_exists('getallheaders')){
                 $headers = getallheaders();
-                return $headers[$key];
+				if(isset($headers[$key])) {
+					return $headers[$key];
+				}
             }
             if(function_exists('apache_request_headers')){
                 $headers = apache_request_headers();
-                return $headers[$key];
+				if(isset($headers[$key])) {
+					return $headers[$key];
+				}
             }
 
             $key = str_replace('-','_',strtoupper($key));
-            return $_SERVER['HTTP_'.$key];
+			if(isset($_SERVER['HTTP_'.$key])) {
+				return $_SERVER['HTTP_'.$key];
+			}
+            return null;
         }
 
         public static function utc_timecode(Phpr_DateTime $datetime){
