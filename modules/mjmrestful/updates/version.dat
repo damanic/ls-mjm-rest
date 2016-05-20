@@ -8,4 +8,4 @@
 #8|1.2.0 Added IP/Password route authentication `MjmRestful_Authenticate_Ip`
 #9|1.2.1 Fixed bug with get_post_json not passing falsey values.
 #10|1.2.2 fixed issue: get_post_json declared static
-#11|1.2.3 fixed issue: isset checks on get_headers
+#11|1.2.3 fixed minor issue: isset checks on get_headers
