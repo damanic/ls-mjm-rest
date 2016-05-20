@@ -5,6 +5,3 @@ The modules in this repository can be used for trial and development purposes, i
 For commercial use please install the module via the Lemonstand marketplace for full support and stable updates.
 
 Code contributions are welcome.
-
-
-/* @TODO */
