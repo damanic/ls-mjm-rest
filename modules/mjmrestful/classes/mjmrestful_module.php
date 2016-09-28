@@ -27,8 +27,13 @@
          * Default API Access point
          */
         public function register_access_points(){
-            $api_settings = MjmRestful_SettingsManager::get();
-            if($api_settings->disable_default_api){
+			$default_api_disabled = Phpr::$config->get('MJMRESTFUL_DISABLE_DEFAULT_API', false);
+			if(!$default_api_disabled){
+				$api_settings = MjmRestful_SettingsManager::get();
+				$default_api_disabled = $api_settings->disable_default_api;
+			}
+
+            if($default_api_disabled){
                 return array();
             }
 
