@@ -79,15 +79,24 @@ class MjmRestful_Response {
         }
     }
 
-    //Close user connection with OK response and allows scripts to continue
+    //Close user connection with OK response and allow scripts to continue
     public static function close_continue(){
-			ob_end_clean(); //clear buffering
-			ignore_user_abort(true); //continue script after connection is closed
-			$response = self::create('ok',null);
-			$response->add_headers('Connection', 'close');
-			$response->add_headers('Content-Encoding', 'none');
-			$response->add_headers('Content-Length', '1');
-			$response->deliver_headers();
+		ignore_user_abort(true); //continue script after connection is closed
+		ob_end_clean(); //clear buffering
+		header("Connection: close\r\n");
+		header("Content-Encoding: none\r\n");
+		ob_start();
+		echo 0;
+		$size = ob_get_length();
+		header("Content-Length: $size");
+		if(version_compare(PHP_VERSION, '5.4.0') >= 0) {
+			http_response_code(200);
+		}
+		ob_end_flush();
+		@ob_flush();
+		flush();
+		ob_end_clean();
+		@fastcgi_finish_request();
 	}
 
 
