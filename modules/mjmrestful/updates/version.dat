@@ -10,3 +10,4 @@
 #10|1.2.2 fixed issue: get_post_json declared static
 #11|1.2.3 fixed minor issue: isset checks on get_headers
 #12|1.2.4 added support for config param $CONFIG['MJMRESTFUL_DISABLE_DEFAULT_API'] to skip need for sql query on every page load.
+#13|1.2.5 Added static function MjmRestful_Response::close_continue()
