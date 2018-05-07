@@ -70,7 +70,6 @@ class MjmRestful_Response {
         header("HTTP/1.0 {$this->status_code} {$this->message}");
         $this->add_headers('Access-Control-Allow-Origin', "*"); //MjmRestful_Helper::get_header('Origin')
         $this->add_headers('Access-Control-Allow-Headers', 'Content-Type, '.$api_settings->token_header_name.', '.MjmRestful_Helper::get_header('Access-Control-Request-Headers'));
-
         $this->add_headers('Access-Control-Max-Age', '1728000');
 
         foreach($this->headers as $header =>  $value){
@@ -79,6 +78,17 @@ class MjmRestful_Response {
             }
         }
     }
+
+    //Close user connection with OK response and allows scripts to continue
+    public static function close_continue(){
+			ob_end_clean(); //clear buffering
+			ignore_user_abort(true); //continue script after connection is closed
+			$response = self::create('ok',null);
+			$response->add_headers('Connection', 'close');
+			$response->add_headers('Content-Encoding', 'none');
+			$response->add_headers('Content-Length', '1');
+			$response->deliver_headers();
+	}
 
 
 
