@@ -96,7 +96,7 @@ class MjmRestful_Response {
 		@ob_flush();
 		flush();
 		ob_end_clean();
-		@fastcgi_finish_request();
+		//@fastcgi_finish_request();
 	}
 
 
