@@ -128,8 +128,13 @@ class MjmRestful_Route {
             }
 
             $response = call_user_func_array($this->callback, array($this));
-            $response->add_access_allow_methods($this->options['allow_methods']);
-            return $response;
+            if($response) {
+				$response->add_access_allow_methods( $this->options['allow_methods'] );
+				return $response;
+			} else {
+            	traceLog('API ROUTE ERROR: ');
+            	traceLog($this->callback);
+			}
         }
     return false;
     }
