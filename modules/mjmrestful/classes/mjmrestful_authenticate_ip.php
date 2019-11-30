@@ -32,6 +32,13 @@ class MjmRestful_Authenticate_Ip extends MjmRestful_Authenticate {
 		}
 	}
 
+	public function has_ip_restrictions(){
+    	if(count($this->allowed_ips)){
+    		return true;
+		}
+    	return false;
+	}
+
 	public function set_ips($ips=array()){
 		$this->allowed_ips = $ips;
 	}
@@ -40,22 +47,29 @@ class MjmRestful_Authenticate_Ip extends MjmRestful_Authenticate {
 		$this->access_pw = $pw;
 	}
 
+	public function requires_access_pw(){
+		if(!empty($this->access_pw)){
+			return true;
+		}
+		return false;
+	}
+
 
     public function  is_user_authenticated(){
 
-		if(!in_array(Phpr::$request->getUserIp(),$this->allowed_ips)){
-			return false;
+    	if($this->has_ip_restrictions()) {
+			if ( !in_array( Phpr::$request->getUserIp(), $this->allowed_ips ) ) {
+				return false;
+			}
 		}
 
-		if(!empty($this->access_pw)){
+		if($this->requires_access_pw()){
 			$input_stream = MjmRestful_Helper::get_input_stream();
-
-				if(MjmRestful_Helper::get_post_json('access_pw',$input_stream) != $this->access_pw){
+			$submitted_pw = MjmRestful_Helper::get_post_json('access_pw',$input_stream);
+				if(!$submitted_pw || $submitted_pw != $this->access_pw){
 					return false;
 				}
 		}
-
-
     return true;
     }
 
