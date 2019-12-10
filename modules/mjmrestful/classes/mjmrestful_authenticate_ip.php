@@ -55,10 +55,11 @@ class MjmRestful_Authenticate_Ip extends MjmRestful_Authenticate {
 	}
 
 
-    public function  is_user_authenticated(){
+    public function is_user_authenticated(){
 
     	if($this->has_ip_restrictions()) {
-			if ( !in_array( Phpr::$request->getUserIp(), $this->allowed_ips ) ) {
+			$user_ip = Phpr::$request->getUserIp(true);
+			if(!$this->is_ip_allowed($user_ip)){
 				return false;
 			}
 		}
@@ -70,9 +71,28 @@ class MjmRestful_Authenticate_Ip extends MjmRestful_Authenticate {
 					return false;
 				}
 		}
+
+
     return true;
     }
 
+    protected function is_ip_allowed($ip){
+    	$pass = false;
 
+		if(in_array($ip,$this->allowed_ips)){
+			$pass = true;
+		}
+
+		$results = Backend::$events->fire_event(array('name' => 'mjmrestful:on_authenticate_ip', 'type'=>'combine'), array());
+		if($results) {
+			foreach ( $results as $result ) {
+				if ( $result === true ) {
+					$pass = true;
+				}
+			}
+		}
+
+    	return $pass;
+	}
 
 }
