@@ -1,7 +1,9 @@
-A module that enables simple RESTful API modules.
+##MJMRESTFUL
 
-The modules in this repository can be used for trial and development purposes, it is not for commercial use.
+A helper module that enables development of simple RESTful API modules in Lemonstand V1.
 
-For commercial use please install the module via the Lemonstand marketplace for full support and stable updates.
+mjmrestfulapiexample.zip contains an example module that demonstrates how to extend MJMRESTFUL to add custom
+API routes.
 
-Code contributions are welcome.
+
+
