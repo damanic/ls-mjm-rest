@@ -80,6 +80,7 @@ class MjmRestful_Response {
     }
 
     //Close user connection with OK response and allow scripts to continue
+	//WARNING: Has potential to terminate script execution on some stacks. TEST!
     public static function close_continue(){
 		ignore_user_abort(true); //continue script after connection is closed
 		ob_end_clean(); //clear buffering
