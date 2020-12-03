@@ -55,12 +55,14 @@
 		}
 	
 		public function run($request_url_params, $options = array()) {
+			$format = 'json';
+			$types = array('GET','POST','PUT','PATCH','DELETE');
+			$response = null;
 			$options = Core_Array::merge_recursive_distinct(array(
-				'format' => 'json',
-				'types' => array('GET','POST','PUT','PATCH','DELETE'),
+				'format' => $format,
+				'types' => $types,
 
 			), $options);
-			
 			extract($options);
 
             //check https
