@@ -1,4 +1,4 @@
-##MJMRESTFUL
+## MJMRESTFUL
 
 A helper module that enables development of simple RESTful API modules in Lemonstand V1.
 
