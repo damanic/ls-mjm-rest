@@ -65,16 +65,27 @@ class MjmRestful_Response {
         $this->add_headers('Access-Control-Allow-Methods', implode(', ',$methods));
     }
 
+    public function add_access_allow_origin($string){
+        $this->add_headers('Access-Control-Allow-Origin', $string);
+    }
+
     public function deliver_headers(){
         $api_settings = MjmRestful_SettingsManager::get();
         header("HTTP/1.0 {$this->status_code} {$this->message}");
-        $this->add_headers('Access-Control-Allow-Origin', "*"); //MjmRestful_Helper::get_header('Origin')
-        $this->add_headers('Access-Control-Allow-Headers', 'Content-Type, '.$api_settings->token_header_name.', '.MjmRestful_Helper::get_header('Access-Control-Request-Headers'));
-        $this->add_headers('Access-Control-Max-Age', '1728000');
+
+        if(!isset($this->headers['Access-Control-Allow-Headers'])){
+            $this->add_headers('Access-Control-Allow-Headers', 'Content-Type, '.$api_settings->token_header_name.', '.MjmRestful_Helper::get_header('Access-Control-Request-Headers'));
+        }
+        if(!isset($this->headers['Access-Control-Max-Age'])) {
+            $this->add_headers('Access-Control-Max-Age', '86400');
+        }
+        if(!isset($this->headers['Access-Control-Allow-Origin'])) {
+            $this->add_access_allow_origin('*');
+        }
 
         foreach($this->headers as $header =>  $value){
             if(!empty($value)){
-            header("{$header}: {$value}");
+                header("{$header}: {$value}");
             }
         }
     }
