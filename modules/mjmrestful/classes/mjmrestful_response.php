@@ -94,7 +94,7 @@ class MjmRestful_Response {
 	//WARNING: Has potential to terminate script execution on some stacks. TEST!
     public static function close_continue(){
 		ignore_user_abort(true); //continue script after connection is closed
-		ob_end_clean(); //clear buffering
+	    if (ob_get_length()) @ob_end_clean(); //clear buffering
 		header("Connection: close\r\n");
 		header("Content-Encoding: none\r\n");
 		ob_start();
@@ -104,11 +104,8 @@ class MjmRestful_Response {
 		if(version_compare(PHP_VERSION, '5.4.0') >= 0) {
 			http_response_code(200);
 		}
-		ob_end_flush();
-		@ob_flush();
-		flush();
-		ob_end_clean();
-		//@fastcgi_finish_request();
+	    if (ob_get_length()) @ob_end_flush();
+	    @flush();
 	}
 
 
