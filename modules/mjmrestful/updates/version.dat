@@ -17,3 +17,4 @@
 #17|1.2.9 Adds strict user IP checks and IP check event
 #18|1.2.10 Minor refactors and doco
 #19|1.2.11 Allow default access control headers to be overridden or omitted
+#20|1.2.12 Minor improvement
